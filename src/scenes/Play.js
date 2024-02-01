@@ -107,7 +107,10 @@ class Play extends Phaser.Scene {
             this.sound.removeAll()
         }
 
-        this.starfield.tilePositionX -= 4
+        if (!this.gameOver) {
+            this.starfield.tilePositionX -= 4
+        }
+        
 
         if (!this.gameOver){
             this.p1Rocket.update()
