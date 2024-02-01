@@ -10,12 +10,34 @@ class Rocket extends Phaser.GameObjects.Sprite {
 
         // sound
         this.sfxShot = scene.sound.add('sfx-shot')
+
+        this.failed = false
+
+        this.clickFire = false
+        this.mouseSway = 0
+        this.mouseReached = true
     }
 
     update() {
         // lr movement
-        if(!this.isFiring) {
-            if(keyLEFT.isDown && this.x >= borderUISize + this.width) {
+        if(!this.isFiring || this.isFiring) {
+            
+            if(this.mouseSway != this.x && !this.mouseReached){
+                this.lastMouse = this.mouseSway
+                if (this.mouseSway < this.x) {
+                    this.x -= this.moveSpeed
+                    if (this.mouseSway >= this.x) {
+                        this.x = this.mouseSway
+                        this.mouseReached = true
+                    }
+                } else {
+                    this.x += this.moveSpeed
+                    if (this.mouseSway <= this.x) {
+                        this.x = this.mouseSway
+                        this.mouseReached = true
+                    }
+                }
+            } else if(keyLEFT.isDown && this.x >= borderUISize + this.width) {
                 this.x -= this.moveSpeed
             } else if(keyRIGHT.isDown && this.x <= game.config.width - borderUISize - this.width) {
                 this.x += this.moveSpeed
@@ -27,6 +49,12 @@ class Rocket extends Phaser.GameObjects.Sprite {
             this.isFiring = true
             this.sfxShot.play()
         }
+        //fire click
+        if(this.clickFire && !this.isFiring) {
+            this.isFiring = true
+            this.sfxShot.play()
+            this.clickFire = false
+        }
 
         // if fired, move up
         if(this.isFiring && this.y >= borderUISize * 3 + borderPadding) {
@@ -37,6 +65,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         if(this.y <= borderUISize * 3 + borderPadding) {
             this.isFiring = false
             this.y = game.config.height - borderUISize - borderPadding
+            this.failed = true
         }
     }
 
